@@ -28,6 +28,10 @@ class RouteServiceProvider extends ServiceProvider
      */
     // protected $namespace = 'App\\Http\\Controllers';
 
+    private const API_VERSIONS = [
+        'v1',
+    ];
+
     /**
      * Define your route model bindings, pattern filters, etc.
      *
@@ -46,6 +50,8 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
+
+            $this->mapVersionedApiRoutes();
         });
     }
 
@@ -59,5 +65,20 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
         });
+    }
+
+    /**
+     * Define the versioned "api" routes for the application.
+     * These routes are stateless.
+     * @return void
+     */
+    protected function mapVersionedApiRoutes() : void
+    {
+        foreach (self::API_VERSIONS as $version) {
+            Route::prefix('api/' . $version)
+                ->middleware('api')
+                ->namespace('App\Api\\' . strtoupper($version) . '\Http\Controllers')
+                ->group(base_path('routes/api.' . $version . '.php'));
+        }
     }
 }

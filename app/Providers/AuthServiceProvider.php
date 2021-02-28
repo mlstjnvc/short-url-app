@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\JWToken;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -25,6 +27,13 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        Auth::viaRequest('jwt', function (Request $request) {
+            $jwt = JWToken::with(['user'])
+                ->where('jwt', $request->header('Authorization'))
+                ->orderByDesc('created_at')
+                ->first();
+
+            return optional($jwt)->user;
+        });
     }
 }
