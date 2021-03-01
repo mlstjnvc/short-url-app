@@ -22,7 +22,7 @@ class CreateConvertedUrlsTable extends Migration
 
             $table->foreign('user_id')->references('id')->on('users');
 
-            $table->index(['user_id', 'short_url']);
+            $table->index(['short_url', 'user_id']);
         });
     }
 
