@@ -17,7 +17,6 @@ Route::group(['namespace' => 'Auth', 'prefix' => 'auth'], function () {
     Route::post('register', 'RegisterController@register')->name('api.v1.register');
     Route::post('login', 'LoginController@login')->name('api.v1.login')->middleware(['api']);
     Route::post('logout', 'LoginController@logout')->name('api.v1.logout')->middleware(['api']);
-    Route::get('token', 'GetTokenController')->name('api.v1.token.get')->middleware(['auth']);
 });
 
 Route::group(['middleware' => 'auth:api'], function () {
@@ -26,6 +25,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('/', 'CreateShortUrlController')->name('api.v1.short-url.create');
     });
     Route::group(['namespace' => 'Auth', 'prefix' => 'auth'], function () {
+        Route::get('token', 'GetTokenController')->name('api.v1.token.get');
         Route::post('logout', 'LoginController@logout')->name('api.v1.logout');
     });
 });

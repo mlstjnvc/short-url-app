@@ -5,6 +5,7 @@ namespace App\Api\V1\Http\Controllers\Auth;
 use App\Api\V1\Http\Controllers\AbstractApiController;
 use App\Api\V1\Http\Requests\Auth\LoginRequest;
 use App\Api\V1\Http\Resources\UserResource;
+use App\Api\V1\Services\Auth\GetTokenService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +25,11 @@ class LoginController extends AbstractApiController
 
         $request->session()->regenerate();
 
-        return $this->success(new UserResource(auth()->user()));
+        app()->call(function (GetTokenService $service) {
+            return $service->execute();
+        });
+
+        return $this->success(new UserResource(auth()->user()->load(['token'])));
     }
 
     /**
