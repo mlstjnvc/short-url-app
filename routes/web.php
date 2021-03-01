@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\ConvertedUrl;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +17,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('short-url/{shortUrl}', function (Request $request, $shortUrl) {
+    $convertedUrl = ConvertedUrl::where('short_url', $shortUrl)->first();
+
+    if (!$convertedUrl) {
+        abort(404);
+    }
+
+    return redirect($convertedUrl->original_url);
 });
